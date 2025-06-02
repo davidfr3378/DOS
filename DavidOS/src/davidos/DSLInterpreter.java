@@ -15,30 +15,37 @@ public class DSLInterpreter {
     /*
     Used to interpret the comand token and call the corresponding method.
     */
-    private static void detect(String token){
+    static void detect(String command, String subject){
         //Utilizes and enhanced switch
-        switch(token){
+        switch(command){
         
-            case "cp" -> System.out.println("Computing");
+            case "cp" -> System.out.println(compute(subject));
             case "st" -> System.out.println("Storing");
         
-            default -> System.out.println(token + " is not a command");
+            default -> System.out.println(command + " is not a command");
         }
     
     }
     
     
     //Simple Computation
-    private static double compute(Scanner input){
-        double sum = 0;
+    private static int compute(String input){
+        int sum = 0;
         //While Scanner still has a token
-        while(input.hasNextInt()){
-            //Set int to token
-            int next = input.nextInt();
-            //Cumulative Sum
+        //System.out.println(input);
+        Scanner comp = new Scanner(input);
+        
+        while(sum < 10){
+            System.out.println("Exists");
+            int next = comp.nextInt();
             sum += next;
         }
     return sum; 
-    } 
+    }
+    
+//    static void printType(int x) { System.out.println("int"); }
+//    static void printType(String x) { System.out.println("String"); }
+//    static void printType(char x) { System.out.println("char"); }
+//    static void printType(boolean x) { System.out.println("boolean"); }
     
 }
