@@ -2,7 +2,7 @@ package davidos;
 
 import java.util.Scanner;
 /*
- * @author wilma
+ * @author david.ez
  */
 
 public class Shell {

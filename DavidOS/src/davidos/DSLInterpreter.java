@@ -2,12 +2,22 @@ package davidos;
 
 import java.util.Scanner;
 import java.util.Stack;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+
+//Exceptions
+import java.io.IOException;
+
 /*
- * @author wilma
+ * @author david.ez
  */
 
 public class DSLInterpreter {
     static Scanner scanner = new Scanner(System.in);
+    static boolean file_created = false;
+
     
     DSLInterpreter(){
         
@@ -21,7 +31,7 @@ public class DSLInterpreter {
         switch(command){
         
             case "cp" -> System.out.println(compute(subject,0));
-            case "st" -> System.out.println("Storing");
+            //case "st" -> System.out.println(store())
         
             default -> System.out.println(command + " is not a command");
         }
@@ -136,5 +146,62 @@ public class DSLInterpreter {
         
         return op1%op2;
     }
+    
+    //Need to add a function to check if a variable exists, writing stuff and also for retrieving them.
+    private static void store(String var_name, int var){
+        createFile();
+        if(checkVar(var_name)){
+            System.out.println("Already exists");
+        }else{
+            writeFile(var_name, var); 
+        }
+        
+    }
+    
+    private static void createFile() {
+        //For now, keep the second else, but when streamlining, remove. Remember that .createNewFile() already checks for existence.
+        if(!file_created){
+            try {
+                File variables = new File("variables.txt");
+                if (variables.createNewFile()) {
+                    System.out.println("File created: " + variables.getName());
+                }else{
+                    System.out.println("File already exists.");
+                }
+            }catch(IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }else{
+            System.out.println("File already created");
+        }
+    }
+    
+    private static boolean checkVar(String var_name) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("variables.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(var_name)) {
+                    return true; // Text found
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading the file: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    private static void writeFile(String var_name, int var){
+        try {
+            FileWriter myWriter = new FileWriter("variables.txt");
+            myWriter.write("works");
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        }catch(IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+    
     
 }
