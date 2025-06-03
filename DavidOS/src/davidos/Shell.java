@@ -12,8 +12,6 @@ public class Shell {
     static Scanner scanner = new Scanner(System.in);
     static String input = "";
 
-    
-
     public Shell(){
         
     }
@@ -27,16 +25,7 @@ public class Shell {
             String command = getCommand(input);
             String tokenised_input = tokenize(input);
             
-            
-            System.out.println("\n Command: " + command);
-            System.out.println("\n COntent: " + tokenised_input);
-            
             interpreter.detect(command, tokenised_input);
-            //int count = outputTokens(input);
-            //System.out.println("\nCount of tokens: " + count);
-
-            //parse(input);
-            
         }
         
     }
@@ -104,37 +93,14 @@ public class Shell {
         return final_token;
     }
     
-    
-    
-    private static int outputTokens(String input) {
-        System.out.println("This is the input: \"" + input + "\"");
-        
-        
-        //create a parser object
-        Scanner parser = new Scanner(input);
-        //while the parser object has tokens left in it
-        int count = 0;
-       
-        while(parser.hasNext()){
-            //get the token
-            String token = parser.next();
-            
-            //print the token
-            System.out.println("Token #" + count + " is: " + token);
-            //keep track of the count of tokens
-            count++;
-        }        
-            return count;
-    }
+     
     
     private static void parse(String input) {
         System.out.println("Parsed");
         
-        
     }
     
 }
-
 
 /* Saved for later:
 
@@ -142,7 +108,5 @@ while(!input.equalsIgnoreCase("quit")){
     outputTokens(input);
     input = getInput();
 }
-
-
 
 */
