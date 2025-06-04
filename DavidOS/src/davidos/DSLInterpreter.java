@@ -6,14 +6,23 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Iterator;
 
 //Exceptions
 import java.io.IOException;
+
 
 /*
  * @author david.ez
  */
 
+/*TO-DO:
+1. Read docs for a couple things
+2. Add means to delete files when program ends, so theres no duplicates
+3. Heavily streamline st. Only minor stuff for now, if time, make it more beautiful.
+*/
 public class DSLInterpreter {
     static Scanner scanner = new Scanner(System.in);
     static boolean file_created = false;
@@ -31,7 +40,7 @@ public class DSLInterpreter {
         switch(command){
         
             case "cp" -> System.out.println(compute(subject,0));
-            //case "st" -> System.out.println(store())
+            case "st" -> store(subject);
         
             default -> System.out.println(command + " is not a command");
         }
@@ -148,7 +157,9 @@ public class DSLInterpreter {
     }
     
     //Need to add a function to check if a variable exists, writing stuff and also for retrieving them.
-    private static void store(String var_name, int var){
+    private static void store(String subject){
+        String var_name = parseVarName(subject);
+        int var = parseVariable(subject);
         createFile();
         if(checkVar(var_name)){
             System.out.println("Already exists");
@@ -192,9 +203,10 @@ public class DSLInterpreter {
     }
     
     private static void writeFile(String var_name, int var){
-        try {
-            FileWriter myWriter = new FileWriter("variables.txt");
-            myWriter.write("works");
+        try{
+            //CHECK OUT THE DOCS FOR FILEWRITER: TRUE????
+            FileWriter myWriter = new FileWriter("variables.txt", true);
+            myWriter.write(var_name + " = " + var + "\n");
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
         }catch(IOException e) {
@@ -203,5 +215,75 @@ public class DSLInterpreter {
         }
     }
     
+    private static String parseVarName(String subject){
+        
+        int index = 0;
+        String temp_var = "";
+        String varName = "";
+        //create a queue
+        //add = enqueue, offer()
+        //remove = dequeue, poll()
+        // peek()
+        Queue<Character> variable = new LinkedList<Character>();
+        
+        //this checks each char of a string for some quality.
+        //for index n in subject
+        for (int i = index; i < subject.length(); i++) {
+            //if n is number, variable:
+         if(!Character.isDigit(subject.charAt(i))){
+             //offer(num)
+             variable.offer(subject.charAt(i));
+         //else 
+            //skip
+         }else if(Character.isDigit(subject.charAt(i))){
+             //pass
+         }
+         
+        }
+        System.out.println("Important: Should be x if variable name is x: " + variable);
+        
+        //only adds one number. 
+        varName += variable.remove();
+        System.out.println("Actual variabl name being passed out: " + varName);
+        return varName;
+    }
+    
+    private static int parseVariable(String subject){
+        int index = 0; //string loop
+        String temp_var = ""; 
+        int var = 0; //final value
+        //create a queue
+        //add = enqueue, offer()
+        //remove = dequeue, poll()
+        // peek()
+        Queue<Character> variable = new LinkedList<Character>();
+        
+        //this checks each char of a string for some quality.
+        //for index n in subject
+        for (int i = index; i < subject.length(); i++) {
+            //if n is number, variable:
+         if(Character.isDigit(subject.charAt(i))){
+             //offer(num)
+             variable.offer(subject.charAt(i));
+         //else 
+            //skip
+         }else if(!Character.isDigit(subject.charAt(i))){
+             //pass
+         }
+         
+        }
+        //pop elements of variable into a string
+       Iterator<Character> studentQueueIterator = variable.iterator();
+      
+          // Iterating Queue
+          while (studentQueueIterator.hasNext()) {
+            char name = studentQueueIterator.next();
+            temp_var += name;
+        }
+        //get the integerparse of that string
+        var += Integer.parseInt(temp_var);
+        System.out.println("Actual integer being passed out: " + var);
+        return var;
+    }
     
 }
