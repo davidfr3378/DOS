@@ -22,6 +22,8 @@ import java.io.IOException;
 1. Read docs for a couple things
 2. Add means to delete files when program ends, so theres no duplicates
 3. Heavily streamline st. Only minor stuff for now, if time, make it more beautiful.
+4. Add clear command to clear variables. {Probably read file using bufferedreader, then if you find what you want o delete, make a bufferedwriter and delete that line somehow?}
+5. 
 */
 public class DSLInterpreter {
     static Scanner scanner = new Scanner(System.in);
@@ -41,12 +43,13 @@ public class DSLInterpreter {
         
             case "cp" -> System.out.println(compute(subject,0));
             case "st" -> store(subject);
-        
+            case "var" -> System.out.println(subject + " = " + readFile(subject));
+            case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
+            case "quit" -> System.out.println("");
             default -> System.out.println(command + " is not a command");
         }
     
-    }
-    
+    }   
     
     //Simple Computation
     private static int compute(String input, int index){
@@ -115,7 +118,7 @@ public class DSLInterpreter {
         
         return op1+op2;
     }
-    
+    //subtract function for the compute command
     private static int subtract(char a, char b){
         int op1 = 0;
         int op2 = 0;
@@ -125,7 +128,7 @@ public class DSLInterpreter {
         
         return op1-op2;
     }
-    
+    //multiply function for the compute command
     private static int multiply(char a, char b){
         int op1 = 0;
         int op2 = 0;
@@ -135,7 +138,7 @@ public class DSLInterpreter {
         
         return op1*op2;
     }
-    
+    //divide function for the compute command
     private static int divide(char a, char b){
         int op1 = 0;
         int op2 = 0;
@@ -145,7 +148,7 @@ public class DSLInterpreter {
         
         return op1/op2;
     }
-    
+    //modulo function for the compute command
     private static int modulo(char a, char b){
         int op1 = 0;
         int op2 = 0;
@@ -156,7 +159,7 @@ public class DSLInterpreter {
         return op1%op2;
     }
     
-    //Need to add a function to check if a variable exists, writing stuff and also for retrieving them.
+    //Need to add a function to check if a variable exists,
     private static void store(String subject){
         String var_name = parseVarName(subject);
         int var = parseVariable(subject);
@@ -168,26 +171,26 @@ public class DSLInterpreter {
         }
         
     }
-    
+    //creates a file if it doesn't already exist; doesn't take parameters though, you'll need to overload to print a specific file
     private static void createFile() {
         //For now, keep the second else, but when streamlining, remove. Remember that .createNewFile() already checks for existence.
         if(!file_created){
             try {
                 File variables = new File("variables.txt");
                 if (variables.createNewFile()) {
-                    System.out.println("File created: " + variables.getName());
+                    //System.out.println("File created: " + variables.getName());
                 }else{
-                    System.out.println("File already exists.");
+                    //System.out.println("File already exists.");  
                 }
             }catch(IOException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
         }else{
-            System.out.println("File already created");
+            //System.out.println("File already created");
         }
     }
-    
+    //check if a var exists in a file; need to overload or change for a file other than variable.
     private static boolean checkVar(String var_name) {
         try (BufferedReader reader = new BufferedReader(new FileReader("variables.txt"))) {
             String line;
@@ -201,20 +204,20 @@ public class DSLInterpreter {
         }
         return false;
     }
-    
+    //writes to a file; DO NOT USE FOR ANYTHING NOT VARIABLE.TXT
     private static void writeFile(String var_name, int var){
         try{
             //CHECK OUT THE DOCS FOR FILEWRITER: TRUE????
             FileWriter myWriter = new FileWriter("variables.txt", true);
             myWriter.write(var_name + " = " + var + "\n");
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
+            //System.out.println("Successfully wrote to the file.");
         }catch(IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }
-    
+    //runs through a string and collects all non-numbers
     private static String parseVarName(String subject){
         
         int index = 0;
@@ -240,14 +243,14 @@ public class DSLInterpreter {
          }
          
         }
-        System.out.println("Important: Should be x if variable name is x: " + variable);
+        //System.out.println("Important: Should be x if variable name is x: " + variable);
         
         //only adds one number. 
         varName += variable.remove();
-        System.out.println("Actual variabl name being passed out: " + varName);
+        //System.out.println("Actual variabl name being passed out: " + varName);
         return varName;
     }
-    
+    //runs through a string and collects all numbers
     private static int parseVariable(String subject){
         int index = 0; //string loop
         String temp_var = ""; 
@@ -282,8 +285,40 @@ public class DSLInterpreter {
         }
         //get the integerparse of that string
         var += Integer.parseInt(temp_var);
-        System.out.println("Actual integer being passed out: " + var);
+        //System.out.println("Actual integer being passed out: " + var);
         return var;
     }
+    //checks through a file and if a given char exists, collects it. DO NOT USE FOR ANYTHING NOT VARIABLE.TXT
+    private static int readFile(String var_name){
+        String filePath = "variables.txt";
+        String strVar = "";
+        int intVar = 0;
+        String strVarname = "";
+        
+        
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                String temp_line;
+                while ((temp_line = reader.readLine()) != null) {
+                    //System.out.println("current line says: " + temp_line);
+                    strVarname = parseVarName(temp_line);
+                    if(strVarname.equals(var_name)){
+                       // System.out.println("Pulled");
+                        strVar += parseVariable(temp_line);
+                        break;
+                    }else{
+                        //pass
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("File doesn't exist");
+                //System.err.println("Error reading file: " + e.getMessage());
+            }
+            intVar = Integer.parseInt(strVar); //make a try catch for this: NumberFormatException
+            //System.out.println("Whole line:" + temp_line + "\n"); //remove later
+        //
+        
+    return intVar;
+    }
     
+   //Check if you can use parseVariable to check string for number.
 }
