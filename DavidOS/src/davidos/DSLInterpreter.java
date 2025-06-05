@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Iterator;
-
+import java.util.HashMap;
 //Exceptions
 import java.io.IOException;
 
@@ -23,9 +23,15 @@ import java.io.IOException;
 2. Add means to delete files when program ends, so theres no duplicates
 3. Heavily streamline st. Only minor stuff for now, if time, make it more beautiful.
 4. Add clear command to clear variables. {Probably read file using bufferedreader, then if you find what you want o delete, make a bufferedwriter and delete that line somehow?}
-5. 
+5. Add support for two digit numbers?
+6. Use hashMap to store numbers? 
+7. //Check if you can use parseVariable to check string for number.
+8. Graphs.
+9. Algebra solver.
 */
+
 public class DSLInterpreter {
+    static HashMap<String, Integer> variables = new HashMap<String, Integer>();
     static Scanner scanner = new Scanner(System.in);
     static boolean file_created = false;
 
@@ -43,9 +49,13 @@ public class DSLInterpreter {
         
             case "cp" -> System.out.println(compute(subject,0));
             case "st" -> store(subject);
-            case "var" -> System.out.println(subject + " = " + readFile(subject));
+            case "var" -> System.out.println(subject + " = " + variables.get(subject));
             case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
-            case "quit" -> System.out.println("");
+            case "let"  -> let(subject);
+            
+            
+            case "quit" -> quit();
+            
             default -> System.out.println(command + " is not a command");
         }
     
@@ -217,6 +227,15 @@ public class DSLInterpreter {
             e.printStackTrace();
         }
     }
+    //stores a  variable in a hashmap
+    private static void let(String subject) {
+        //Hashmap used was made public so as to have the ability to clear it from quit()
+        //Hashmap stuff:
+        // hashmap.put("var_name",var); //hashmap.get("var_name"); //hashmap.remove("var_name") //hashmap.clear();
+        String var_name = parseVarName(subject);
+        int var = parseVariable(subject);
+        variables.put(var_name, var);
+    }
     //runs through a string and collects all non-numbers
     private static String parseVarName(String subject){
         
@@ -319,6 +338,10 @@ public class DSLInterpreter {
         
     return intVar;
     }
-    
-   //Check if you can use parseVariable to check string for number.
+    //what do you think this does?
+    private static void quit(){
+        System.out.println("Have a good day!");
+        variables.clear();
+    }
+   
 }
