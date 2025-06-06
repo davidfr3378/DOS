@@ -13,22 +13,13 @@ import java.util.HashMap;
 //Exceptions
 import java.io.IOException;
 
-
 /*
  * @author david.ez
  */
 
-/*TO-DO:
-1. Read docs for a couple things
-2. Add means to delete files when program ends, so theres no duplicates
-3. Heavily streamline st. Only minor stuff for now, if time, make it more beautiful.
-5. Add support for two digit numbers?: Use hashMap
-7. //Check if you can use parseVariable to check string for number.
-8. Graphs.
-9. Algebra solver.
-
-Streamlined goals:
-1. Re-structure the computing algorithm to include basic algebra{1. Involve Brackets[]; 2. Involve variables []; 3. Add: Exponents, square roots []; REACH: Add: log, sin {and the others}}
+/* 
+Goals: [✓] [X] [-]
+1. Re-structure the computing algorithm to include basic algebra{1. Involve Brackets[]; 2. Involve variables [✓]; 3. Add: Exponents, square roots []; REACH: Add: log, sin {and the others}}
 2. Add graphing ability using JFreeChart {Seperate file. 1. Ability to plot linear and quadratic functions[]; Ability to plot with a specified domain []; Ability to plot sinusodial equations []}
 3. Math Errors, pretty output {1. Ensure problems like attempting to divide by 0 are not easily possible []; 2. Make all output to the user concise and consistent[].}
 4. Add a file parser {1. Parse through a file as though they were regular commands from the user {note that in this case, only the final value of whatever script is running is needed, unless specified (i.e print())}}
@@ -52,13 +43,12 @@ public class DSLInterpreter {
         //Utilizes and enhanced switch
         switch(command){
         
-            case "cp" -> System.out.println(compute(subject,0));
+            case "cp" -> System.out.printf("[output: %d] \n", compute(subject,0));
             case "st" -> store(subject);
             case "var" -> System.out.println(subject + " = " + variables.get(subject));
             case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
             case "let"  -> let(subject);
             case "clear" -> clear(subject);
-            //
 
             case "help" -> help(subject); //not yet functional
             case "quit" -> quit();
@@ -69,9 +59,7 @@ public class DSLInterpreter {
 
     //Simple Computation
     private static int compute(String input, int index){
-     //operand.push(""); 
-     //operand.pop();
-     //operand.peek();
+     //operand.push("");  //operand.pop(); //operand.peek();
      //Creating Stacks for operator and operand.
      Stack<Character> operand = new Stack<Character>();
      Stack<Character> operator = new Stack<Character>();
@@ -82,6 +70,10 @@ public class DSLInterpreter {
      for (int i = index; i < input.length(); i++) {
          if(Character.isDigit(input.charAt(i))){
              operand.push(input.charAt(i));
+        //If a variable is found,
+         }else if(variables.get(String.valueOf(input.charAt(i))) != null){
+            //push the variable value to the stack
+             operand.push(varValueCharacter(variables.get(String.valueOf(input.charAt(i)))));
          }else if(!Character.isDigit(input.charAt(i))){
              operator.push(input.charAt(i));
              //Order swapped because stack pops in reverse order i.2 12- = 1 
@@ -104,22 +96,11 @@ public class DSLInterpreter {
              //System.out.println(Character.toString(new_operand_char)); //for test
              operand.push(new_operand_char);
              
-     
          }
          
         }
         //NOTE: IF LESS BUSY, ADD SOMETHING THAT RETURNS ORIGINAL VALUE IF NO OPERATORS. CURRENTLY RETURNS 0
         int answer = new_operand;
-//    
-//     while((a.equals("")) == false){
-//         if(Character.isDigit(input.charAt(index))){
-//             operand.push(input.charAt(index));
-//         }else if(!Character.isDigit(input.charAt(index))){
-//             operator.push(input.charAt(index));
-//         }
-//     }
-        //System.out.println(operand);
-        //System.out.println(operator);
         
     return answer; 
     }
@@ -189,7 +170,7 @@ public class DSLInterpreter {
     }
     //creates a file if it doesn't already exist; doesn't take parameters though, you'll need to overload to print a specific file
     private static void createFile() {
-        //For now, keep the second else, but when streamlining, remove. Remember that .createNewFile() already checks for existence.
+        //create new file checks for existence first
         if(!file_created){
             try {
                 File variables = new File("variables.txt");
@@ -202,8 +183,6 @@ public class DSLInterpreter {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
-        }else{
-            //System.out.println("File already created");
         }
     }
     //check if a var exists in a file; need to overload or change for a file other than variable.
@@ -241,6 +220,7 @@ public class DSLInterpreter {
         String var_name = parseVarName(subject);
         int var = parseVariable(subject);
         variables.put(var_name, var);
+        System.out.println("[+]");
     }
     //runs through a string and collects all non-numbers
     private static String parseVarName(String subject){
@@ -249,9 +229,7 @@ public class DSLInterpreter {
         String temp_var = "";
         String varName = "";
         //create a queue
-        //add = enqueue, offer()
-        //remove = dequeue, poll()
-        // peek()
+        //add = enqueue, offer() //remove = dequeue, poll() // peek()
         Queue<Character> variable = new LinkedList<Character>();
         
         //this checks each char of a string for some quality.
@@ -281,9 +259,7 @@ public class DSLInterpreter {
         String temp_var = ""; 
         int var = 0; //final value
         //create a queue
-        //add = enqueue, offer()
-        //remove = dequeue, poll()
-        // peek()
+        //add = enqueue, offer() //remove = dequeue, poll() // peek()
         Queue<Character> variable = new LinkedList<Character>();
         
         //this checks each char of a string for some quality.
@@ -340,7 +316,6 @@ public class DSLInterpreter {
             }
             intVar = Integer.parseInt(strVar); //make a try catch for this: NumberFormatException
             //System.out.println("Whole line:" + temp_line + "\n"); //remove later
-        //
         
     return intVar;
     }
@@ -349,6 +324,13 @@ public class DSLInterpreter {
             variables.remove(subject);
             System.out.println("[+]");
     }
+    //turns an int into a Character
+    private static Character varValueCharacter(int x){
+        //'0' -> 48; (char)u --> 'u in char';
+        Character c = (char) (x + '0');
+        return c;
+    }
+
     //Prints man for all commands or specific
     private static void help(String command){
         System.out.println("Helping");
