@@ -36,8 +36,8 @@ public class Shell {
         
         return input;
     }
-    
-    private static String getCommand(String input) {
+    //changed to public
+    public static String getCommand(String input) {
         
         //Initialize Final Token string. 
         String command = "";
@@ -63,8 +63,8 @@ public class Shell {
         
         return command;
     }
-    
-    private static String tokenize(String input){
+    //changed to public
+    public static String tokenize(String input){
         //Initialize Final Token string. 
         String final_token = "";
         

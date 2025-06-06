@@ -27,6 +27,7 @@ Goals: [✓] [X] [-]
 */
 
 public class DSLInterpreter {
+    static Shell shell = new Shell();
     static HashMap<String, Integer> variables = new HashMap<String, Integer>();
     static Scanner scanner = new Scanner(System.in);
     static boolean file_created = false;
@@ -49,6 +50,7 @@ public class DSLInterpreter {
             case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
             case "let"  -> let(subject);
             case "clear" -> clear(subject);
+            case "parse" -> parseFile(subject);
 
             case "help" -> help(subject); //not yet functional
             case "quit" -> quit();
@@ -74,6 +76,8 @@ public class DSLInterpreter {
          }else if(variables.get(String.valueOf(input.charAt(i))) != null){
             //push the variable value to the stack
              operand.push(varValueCharacter(variables.get(String.valueOf(input.charAt(i)))));
+             System.out.println("Value added to operands: " + variables.get(String.valueOf(input.charAt(i))));
+             System.out.println("Operands "+operand);
          }else if(!Character.isDigit(input.charAt(i))){
              operator.push(input.charAt(i));
              //Order swapped because stack pops in reverse order i.2 12- = 1 
@@ -326,11 +330,36 @@ public class DSLInterpreter {
     }
     //turns an int into a Character
     private static Character varValueCharacter(int x){
-        //'0' -> 48; (char)u --> 'u in char';
-        Character c = (char) (x + '0');
-        return c;
+        Character c = '\0';
+        if (x < 10){
+            //'0' -> 48; (char)u --> 'u in char';
+             c = (char) (x + '0');
+            
+        }else if(x > 10){
+            c = (char) (x);
+        }
+        return c; 
     }
-
+    //parse through a file and plug each line into detect()
+    private static void parseFile(String filename){
+        String filePath = "C:\\Users\\wilma\\OneDrive\\Documents\\NetBeansProjects\\DOS\\DavidOS\\"+filename;
+        System.out.println("Filepath:" + filePath);
+            //Create a bufferedReader
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                String temp_line;
+                //For each line, as long as not empty
+                while ((temp_line = reader.readLine()) != null) {
+                    //tokenise the line via getCommand() and tokenize in shell, then plug into detect
+                    System.out.println("Command: " + shell.getCommand(temp_line) + " Token: " + shell.tokenize(temp_line));
+                    detect(shell.getCommand(temp_line),shell.tokenize(temp_line));  
+                }
+            } catch (IOException e) {
+                System.out.println("File doesn't exist");
+                System.err.println("Error reading file: " + e.getMessage());
+            }
+     
+    }
+    
     //Prints man for all commands or specific
     private static void help(String command){
         System.out.println("Helping");
@@ -340,4 +369,4 @@ public class DSLInterpreter {
         System.out.println("Have a good day!");
         variables.clear();
     }
-}
+}//Isn't working because varValue... cannot put a two digit number into a string, obviously; Can't even remember how it worked before. Possible solution involves changing the compute functions

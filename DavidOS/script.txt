@@ -1,0 +1,5 @@
+let a 14
+var a
+let b 4
+var b
+cp ab*
