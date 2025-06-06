@@ -22,7 +22,7 @@ Goals: [✓] [X] [-]
 1. Re-structure the computing algorithm to include basic algebra{1. Involve Brackets[]; 2. Involve variables [✓]; 3. Add: Exponents, square roots []; REACH: Add: log, sin {and the others}}
 2. Add graphing ability using JFreeChart {Seperate file. 1. Ability to plot linear and quadratic functions[]; Ability to plot with a specified domain []; Ability to plot sinusodial equations []}
 3. Math Errors, pretty output {1. Ensure problems like attempting to divide by 0 are not easily possible []; 2. Make all output to the user concise and consistent[].}
-4. Add a file parser {1. Parse through a file as though they were regular commands from the user {note that in this case, only the final value of whatever script is running is needed, unless specified (i.e print())}}
+4. Add a file parser {1. Parse through a file as though they were regular commands from the user [✓]; 2. Able to write comments in files []; 3. Able to set a variable to th efinished product of a computation (for regular CLI commands as well)[]}
 5. Add a basic terminal like UI {1. UI for main program []; 2. UI for graphing []}
 */
 
