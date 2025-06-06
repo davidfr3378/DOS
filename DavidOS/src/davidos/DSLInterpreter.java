@@ -22,12 +22,17 @@ import java.io.IOException;
 1. Read docs for a couple things
 2. Add means to delete files when program ends, so theres no duplicates
 3. Heavily streamline st. Only minor stuff for now, if time, make it more beautiful.
-4. Add clear command to clear variables. {Probably read file using bufferedreader, then if you find what you want o delete, make a bufferedwriter and delete that line somehow?}
-5. Add support for two digit numbers?
-6. Use hashMap to store numbers? 
+5. Add support for two digit numbers?: Use hashMap
 7. //Check if you can use parseVariable to check string for number.
 8. Graphs.
 9. Algebra solver.
+
+Streamlined goals:
+1. Re-structure the computing algorithm to include basic algebra{1. Involve Brackets[]; 2. Involve variables []; 3. Add: Exponents, square roots []; REACH: Add: log, sin {and the others}}
+2. Add graphing ability using JFreeChart {Seperate file. 1. Ability to plot linear and quadratic functions[]; Ability to plot with a specified domain []; Ability to plot sinusodial equations []}
+3. Math Errors, pretty output {1. Ensure problems like attempting to divide by 0 are not easily possible []; 2. Make all output to the user concise and consistent[].}
+4. Add a file parser {1. Parse through a file as though they were regular commands from the user {note that in this case, only the final value of whatever script is running is needed, unless specified (i.e print())}}
+5. Add a basic terminal like UI {1. UI for main program []; 2. UI for graphing []}
 */
 
 public class DSLInterpreter {
@@ -52,15 +57,16 @@ public class DSLInterpreter {
             case "var" -> System.out.println(subject + " = " + variables.get(subject));
             case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
             case "let"  -> let(subject);
-            
-            
+            case "clear" -> clear(subject);
+            //
+
+            case "help" -> help(subject); //not yet functional
             case "quit" -> quit();
-            
             default -> System.out.println(command + " is not a command");
         }
     
     }   
-    
+
     //Simple Computation
     private static int compute(String input, int index){
      //operand.push(""); 
@@ -167,7 +173,7 @@ public class DSLInterpreter {
         op2 = Character.getNumericValue(b);
         
         return op1%op2;
-    }
+    }  
     
     //Need to add a function to check if a variable exists,
     private static void store(String subject){
@@ -338,10 +344,18 @@ public class DSLInterpreter {
         
     return intVar;
     }
+    //clears a variable in hashmap
+    private static void clear(String subject) {
+            variables.remove(subject);
+            System.out.println("[+]");
+    }
+    //Prints man for all commands or specific
+    private static void help(String command){
+        System.out.println("Helping");
+    }
     //what do you think this does?
     private static void quit(){
         System.out.println("Have a good day!");
         variables.clear();
     }
-   
 }
