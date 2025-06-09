@@ -22,7 +22,7 @@ Goals: [✓] [X] [-]
 1. Re-structure the computing algorithm to include basic algebra{1. Involve Brackets[]; 2. Involve variables [✓]; 3. Add: Exponents, square roots []; REACH: Add: log, sin {and the others}}
 2. Add graphing ability using JFreeChart {Seperate file. 1. Ability to plot linear and quadratic functions[]; Ability to plot with a specified domain []; Ability to plot sinusodial equations []}
 3. Math Errors, pretty output {1. Ensure problems like attempting to divide by 0 are not easily possible []; 2. Make all output to the user concise and consistent[].}
-4. Add a file parser {1. Parse through a file as though they were regular commands from the user [✓]; 2. Able to write comments in files []; 3. Able to set a variable to th efinished product of a computation (for regular CLI commands as well)[]}
+4. Add a file parser {1. Parse through a file as though they were regular commands from the user [✓]; 2. Able to write comments in files [✓]; 3. Able to set a variable to the finished product of a computation (for regular CLI commands as well)[]}
 5. Add a basic terminal like UI {1. UI for main program []; 2. UI for graphing []}
 */
 
@@ -42,21 +42,26 @@ public class DSLInterpreter {
     */
     static void detect(String command, String subject){
         //Utilizes and enhanced switch
-        switch(command){
-        
-            case "cp" -> System.out.printf("[output: %d] \n", compute(subject,0));
-            case "st" -> store(subject);
-            case "var" -> System.out.println(subject + " = " + variables.get(subject));
-            case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
-            case "let"  -> let(subject);
-            case "clear" -> clear(subject);
-            case "parse" -> parseFile(subject);
+        int count = 1;
+        // command isn't empty (its only empty if a ("/") is detected as the start of the line
+        while(!command.equals("") && count == 1){
+            switch(command){
 
-            case "help" -> help(subject); //not yet functional
-            case "quit" -> quit();
-            default -> System.out.println(command + " is not a command");
+                case "cp" -> System.out.printf("[output: %d] \n", compute(subject,0));
+                case "st" -> store(subject);
+                case "var" -> System.out.println(subject + " = " + variables.get(subject));
+                case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
+                case "let"  -> let(subject);
+                case "clear" -> clear(subject);
+                case "parse" -> parseFile(subject);
+                case "set" -> set(subject); 
+                case "graph" -> graph(subject);
+                case "help" -> help(subject); //not yet functional
+                case "quit" -> quit();
+                default -> System.out.println(command + " is not a command");
+            }
+            count--;
         }
-    
     }   
 
     //Simple Computation
@@ -78,6 +83,11 @@ public class DSLInterpreter {
              operand.push(varValueCharacter(variables.get(String.valueOf(input.charAt(i)))));
              System.out.println("Value added to operands: " + variables.get(String.valueOf(input.charAt(i))));
              System.out.println("Operands "+operand);
+        //Else if a comment is detected ("/")
+        //Edit: I don't need this at all since compute doesn't do initial parsing 🤦. 
+         }else if(input.charAt(i) == '/'){
+             System.out.println("\"/\" detected!" );
+             break;
          }else if(!Character.isDigit(input.charAt(i))){
              operator.push(input.charAt(i));
              //Order swapped because stack pops in reverse order i.2 12- = 1 
@@ -101,7 +111,7 @@ public class DSLInterpreter {
              operand.push(new_operand_char);
              
          }
-         
+            
         }
         //NOTE: IF LESS BUSY, ADD SOMETHING THAT RETURNS ORIGINAL VALUE IF NO OPERATORS. CURRENTLY RETURNS 0
         int answer = new_operand;
@@ -358,6 +368,14 @@ public class DSLInterpreter {
                 System.err.println("Error reading file: " + e.getMessage());
             }
      
+    }
+    //set a variable to the output of another command
+    private static void set(String subject){
+        System.out.println("Parser out of order");
+    }
+    //graphs a function within a certain domain
+    private static void graph(String subject){
+        System.out.println("Grapher not working. Subject is: " + subject);
     }
     
     //Prints man for all commands or specific
