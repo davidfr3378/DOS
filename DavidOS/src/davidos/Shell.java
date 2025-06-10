@@ -53,7 +53,10 @@ public class Shell {
             command_token_index--;
             
             //Try to interpret
-            if(command_token_index == 1){
+            if(input.charAt(0) == '/'){
+             System.out.println("\"/\" detected!" );
+             break;
+            }else if(command_token_index == 1){
                 command += token;
             }else{
                 //I don't need anything else
