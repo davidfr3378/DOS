@@ -25,7 +25,7 @@ public class Shell {
             String command = getCommand(input);
             String tokenised_input = tokenize(input);
             
-            interpreter.detect(command, tokenised_input);
+            DSLInterpreter.detect(command, tokenised_input);
         }
         
     }
@@ -60,6 +60,7 @@ public class Shell {
             }
             
         }
+        parser.close();
         
         return command;
     }
@@ -89,6 +90,7 @@ public class Shell {
             }
             
         }       
+        parser.close();
 
         return final_token;
     }
