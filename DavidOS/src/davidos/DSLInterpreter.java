@@ -94,8 +94,16 @@ public class DSLInterpreter {
                  new_index = j;
              }
 
+             //getting what to operate on
              func_operand = operand.pop();
-             computeFunc(func, func_operand);
+             //setting new operand (which is the final answer) to the result of the computation
+             int result = computeFunc(func, func_operand); 
+             System.out.println("Result: " + result);
+             new_operand = result;
+             //compute function returns a number. THis number is then converted to a digit then pushed to operands
+             char new_operand_char = Character.forDigit(result,result+1);
+             operand.push(new_operand_char);
+
              System.out.println("Func: " + func);
              i += new_index;
              System.out.println("Index: " + i);
@@ -226,29 +234,68 @@ public class DSLInterpreter {
 
         return x;
     } 
+    
     //function dispatcher
     private static int computeFunc(String function, int operand){
-        String[] functions = {"sin", "cos", "log", "tan", "sqrt", "exp", "abs", "sqr"};
+        int result = 0;
+        String[] functions = {"sin", "cos", "log", "tan", "sqrt", "sqr"};
         
         switch(function){
             
-            case "sin" -> sin(operand);
-            case "cos" -> sin(operand);
-            case "tan" -> sin(operand);
-            case "log" -> sin(operand);
-            case "exp" -> System.out.println("w was called");
-            case "abs" -> System.out.println("a was called");
-            case "sqt" -> System.out.println("i was called");
-            
+            case "sin" -> result=sin(operand);
+            case "cos" -> result=cos(operand);
+            case "tan" -> result=tan(operand);
+            case "log" -> result=log(operand);
+            case "sqt" -> result=sqt(operand);
+
             default -> System.out.println("Function: \"" +function + "\" does not esist");
         }
-        return 0;
+        return result;
     }
     //sin function for compute function
     private static int sin(int operand){
         int result = 0;
+        double rad_operand = 0;
+        rad_operand = Math.toRadians(operand);
+        System.out.println("Operand" + rad_operand);
+        result = (int) Math.round(Math.sin(rad_operand));
+        System.out.println("Result in sin: " + result);
+        return result;
+    }
+    //cos function for compute function
+    private static int cos(int operand){
+        int result = 0;
+        double rad_operand = 0;
+        rad_operand = Math.toRadians(operand);
+        System.out.println("Operand" + rad_operand);
+        result = (int) Math.round(Math.cos(rad_operand));
+        System.out.println("Result in cos: " + result);
+        return result;
+    }
+    //tan function for compute function
+    private static int tan(int operand){
+        int result = 0;
+        double rad_operand = 0;
+        rad_operand = Math.toRadians(operand);
+        System.out.println("Operand" + rad_operand);
+        result = (int) Math.round(Math.tan(rad_operand));
+        System.out.println("Result in sin: " + result);
+        return result;
+    }
+    //log function for compute function
+    private static int log(int operand){
+        int result = 0;
+        System.out.println("operand in log: "+operand);
+        result = (int) Math.round(Math.log(operand));
         
-        result = (int) Math.sin(operand);
+        return result;
+    }
+    //sqt function for compute function
+    private static int sqt(int operand){
+        int result = 0;
+        
+        result = (int) Math.sqrt(operand);
+
         return result;
     }
     
@@ -318,6 +365,7 @@ public class DSLInterpreter {
         variables.put(var_name, var);
         System.out.println("[+]");
     }
+    
     //runs through a string and collects all non-numbers
     private static String parseVarName(String subject){
         
@@ -385,6 +433,7 @@ public class DSLInterpreter {
         //System.out.println("Actual integer being passed out: " + var);
         return var;
     }
+    
     //checks through a file and if a given char exists, collects it. DO NOT USE FOR ANYTHING NOT VARIABLE.TXT
     private static int readFile(String var_name){
         String filePath = "variables.txt";
@@ -452,6 +501,7 @@ public class DSLInterpreter {
             }
      
     }
+    
     //set a variable to the output of another command
     private static void set(String subject){
         System.out.println("Parser out of order");
