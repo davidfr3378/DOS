@@ -83,7 +83,23 @@ public class DSLInterpreter {
      for (int i = index; i < input.length(); i++) {
          if(Character.isDigit(input.charAt(i))){
              operand.push(input.charAt(i));
-        //If a variable is found,
+             
+        //If a function first letter is found
+         }else if(isMathFunction(input.charAt(i))){
+             System.out.println("Index before: " + i);
+             int new_index = 0, func_operand = 0;
+             String func= "";
+             for(int j = i; j<i+3; j++){
+                 func += input.charAt(j);
+                 new_index = j;
+             }
+
+             func_operand = operand.pop();
+             computeFunc(func, func_operand);
+             System.out.println("Func: " + func);
+             i += new_index;
+             System.out.println("Index: " + i);
+         //If a variable is found,
          }else if(variables.get(String.valueOf(input.charAt(i))) != null){
             //push the variable value to the stack
              operand.push(varValueCharacter(variables.get(String.valueOf(input.charAt(i)))));
@@ -93,6 +109,7 @@ public class DSLInterpreter {
              System.out.println("\"/\" detected!" );
              break;
          }else if(!Character.isDigit(input.charAt(i))){
+             System.out.println("Index: " + input.charAt(i));
              operator.push(input.charAt(i));
              //Order swapped because stack pops in reverse order i.2 12- = 1 
              char op2 = operand.pop();
@@ -132,6 +149,21 @@ public class DSLInterpreter {
         
         return wrapped_output;
     }
+    
+    //Checks if a char is the same as a first letter of any of the recognised functions.
+    private static boolean isMathFunction(char c){
+        boolean isFunc = false;
+        //log, sin, cos, tan, sqt, sqr, abs
+        char[] funcs = {'s', 'l', 'c', 't', 'a'};
+        
+        for(int i = 0; i < funcs.length; i++){
+            if(c == funcs[i]){
+                isFunc = true;
+            }
+        }
+        return isFunc;
+    }
+    
     //add function for the compute command
     private static int add(char a, char b){
         int op1 = 0;
@@ -194,7 +226,32 @@ public class DSLInterpreter {
 
         return x;
     } 
-
+    //function dispatcher
+    private static int computeFunc(String function, int operand){
+        String[] functions = {"sin", "cos", "log", "tan", "sqrt", "exp", "abs", "sqr"};
+        
+        switch(function){
+            
+            case "sin" -> sin(operand);
+            case "cos" -> sin(operand);
+            case "tan" -> sin(operand);
+            case "log" -> sin(operand);
+            case "exp" -> System.out.println("w was called");
+            case "abs" -> System.out.println("a was called");
+            case "sqt" -> System.out.println("i was called");
+            
+            default -> System.out.println("Function: \"" +function + "\" does not esist");
+        }
+        return 0;
+    }
+    //sin function for compute function
+    private static int sin(int operand){
+        int result = 0;
+        
+        result = (int) Math.sin(operand);
+        return result;
+    }
+    
     //Need to add a function to check if a variable exists,
     private static void store(String subject){
         String var_name = parseVarName(subject);
