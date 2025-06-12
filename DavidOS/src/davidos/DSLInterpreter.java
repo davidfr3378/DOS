@@ -40,14 +40,15 @@ public class DSLInterpreter {
     /*
     Used to interpret the comand token and call the corresponding method.
     */
-    static void detect(String command, String subject){
+    static String detect(String command, String subject){
+        String result = "";
         //Utilizes and enhanced switch
         int count = 1;
         // command isn't empty (its only empty if a ("/") is detected as the start of the line
         while(!command.equals("") && count == 1){
             switch(command){
 
-                case "cp" -> System.out.printf("[output: %d] \n", compute(subject,0));
+                case "cp" -> result += computeManager(compute(subject,0));
                 case "st" -> store(subject);
                 case "var" -> System.out.println(subject + " = " + variables.get(subject));
                 case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
@@ -55,16 +56,21 @@ public class DSLInterpreter {
                 case "clear" -> clear(subject);
                 case "parse" -> parseFile(subject);
                 case "set" -> set(subject); 
-                case "graph" -> graph(subject);
+                case "graph" -> graph(subject); //to be removed temporarily
                 case "help" -> help(subject); //not yet functional
                 case "quit" -> quit();
                 default -> System.out.println(command + " is not a command");
             }
             count--;
+
+            if(result.equals("")){
+                //pass
+            }
         }
+        return result;
     }   
 
-    //Simple Computation
+    //Arithmetic expression parser, interpreter and computator (Upgraded)
     private static int compute(String input, int index){
      //operand.push("");  //operand.pop(); //operand.peek();
      //Creating Stacks for operator and operand.
@@ -81,8 +87,6 @@ public class DSLInterpreter {
          }else if(variables.get(String.valueOf(input.charAt(i))) != null){
             //push the variable value to the stack
              operand.push(varValueCharacter(variables.get(String.valueOf(input.charAt(i)))));
-             System.out.println("Value added to operands: " + variables.get(String.valueOf(input.charAt(i))));
-             System.out.println("Operands "+operand);
         //Else if a comment is detected ("/")
         //Edit: I don't need this at all since compute doesn't do initial parsing 🤦. 
          }else if(input.charAt(i) == '/'){
@@ -104,6 +108,8 @@ public class DSLInterpreter {
                  case '*' -> new_operand = multiply(op1,op2);
                  case '/' -> new_operand = divide(op1,op2);
                  case '%' -> new_operand = modulo(op1,op2);
+                 case '^' -> new_operand = exponent(op1, op2);
+
                  default -> System.out.println(x + " is not an operator");
              }
              char new_operand_char = Character.forDigit(new_operand,new_operand+1);
@@ -118,7 +124,14 @@ public class DSLInterpreter {
         
     return answer; 
     }
-    
+    //Wraps compute output
+    private static String computeManager(int output){
+        String wrapped_output = "";
+
+        wrapped_output = "" + output + "";
+        
+        return wrapped_output;
+    }
     //add function for the compute command
     private static int add(char a, char b){
         int op1 = 0;
@@ -169,7 +182,19 @@ public class DSLInterpreter {
         
         return op1%op2;
     }  
-    
+    //exponent function for the compute command
+    private static int exponent(char a, char b){
+        int op1 = 0;
+        int op2 = 0;
+        
+        op1 = Character.getNumericValue(a);
+        op2 = Character.getNumericValue(b);
+        
+        int x = (int) Math.round(Math.pow(op1 , op2));
+
+        return x;
+    } 
+
     //Need to add a function to check if a variable exists,
     private static void store(String subject){
         String var_name = parseVarName(subject);
@@ -360,8 +385,9 @@ public class DSLInterpreter {
                 //For each line, as long as not empty
                 while ((temp_line = reader.readLine()) != null) {
                     //tokenise the line via getCommand() and tokenize in shell, then plug into detect
-                    System.out.println("Command: " + shell.getCommand(temp_line) + " Token: " + shell.tokenize(temp_line));
-                    detect(shell.getCommand(temp_line),shell.tokenize(temp_line));  
+                    System.out.println("Command: " + DSLParser.getCommand(temp_line) + " Token: " + DSLParser.tokenize(temp_line));
+
+                    detect(DSLParser.getCommand(temp_line),DSLParser.tokenize(temp_line));  
                 }
             } catch (IOException e) {
                 System.out.println("File doesn't exist");
