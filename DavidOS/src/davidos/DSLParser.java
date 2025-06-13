@@ -134,7 +134,7 @@ private static String parser(String input){
      String after_token = input.substring(last_cmd_index + token.length()).trim();
     //plug text into last command
     token_output = DSLInterpreter.detect(token, after_token);
-    System.out.println(token_output);
+    //System.out.println(token_output);
     //If therer is more than one token
     if(command_count > 1){
         //System.out.println("Second time" + "Token output:" + token_output + "e");
@@ -165,7 +165,7 @@ private static boolean isCommand(String input){
 //Manages output from parser. Potentially not needed
 public static void parserManager(String input){
     String output = parser(input);
-    System.out.println(output);
+    //System.out.println(output);
 }
 
 /*
