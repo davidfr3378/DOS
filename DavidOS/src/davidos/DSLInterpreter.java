@@ -24,11 +24,18 @@ Goals: [✓] [X] [-]
 3. Math Errors, pretty output {1. Ensure problems like attempting to divide by 0 are not easily possible []; 2. Make all output to the user concise and consistent[].}
 4. Add a file parser {1. Parse through a file as though they were regular commands from the user [✓]; 2. Able to write comments in files [✓]; 3. Able to set a variable to the finished product of a computation (for regular CLI commands as well)[]}
 5. Add a basic terminal like UI {1. UI for main program []; 2. UI for graphing []}
+
+
+/ Tight goals:
+1. Add let functionality for computer or move let over completely.
+2. Finish and merge changes before end of friday
 */
+
 
 public class DSLInterpreter {
     static Shell shell = new Shell();
-    static HashMap<String, Integer> variables = new HashMap<String, Integer>();
+    static Computer computer = new Computer();
+    static HashMap<String, Double> variables = new HashMap<String, Double>();
     static Scanner scanner = new Scanner(System.in);
     static boolean file_created = false;
 
@@ -48,7 +55,7 @@ public class DSLInterpreter {
         while(!command.equals("") && count == 1){
             switch(command){
 
-                case "cp" -> result += computeManager(compute(subject,0));
+                case "cp" -> result += computer.compute(subject, variables);
                 case "st" -> store(subject);
                 case "var" -> System.out.println(subject + " = " + variables.get(subject));
                 case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
@@ -69,236 +76,7 @@ public class DSLInterpreter {
         }
         return result;
     }   
-
-    //Arithmetic expression parser, interpreter and computator (Upgraded)
-    private static int compute(String input, int index){
-     //operand.push("");  //operand.pop(); //operand.peek();
-     //Creating Stacks for operator and operand.
-     Stack<Character> operand = new Stack<Character>();
-     Stack<Character> operator = new Stack<Character>();
-     int new_operand = 0;
-
-     //Get a token from the string
-     //Note that I'm converting it to a wrapper object so I can compare. Freaking comparison nonsense. 
-     for (int i = index; i < input.length(); i++) {
-         if(Character.isDigit(input.charAt(i))){
-             operand.push(input.charAt(i));
-             
-        //If a function first letter is found
-         }else if(isMathFunction(input.charAt(i))){
-             System.out.println("Index before: " + i);
-             int new_index = 0, func_operand = 0;
-             String func= "";
-             for(int j = i; j<i+3; j++){
-                 func += input.charAt(j);
-                 new_index = j;
-             }
-
-             //getting what to operate on
-             func_operand = operand.pop();
-             //setting new operand (which is the final answer) to the result of the computation
-             int result = computeFunc(func, func_operand); 
-             System.out.println("Result: " + result);
-             new_operand = result;
-             //compute function returns a number. THis number is then converted to a digit then pushed to operands
-             char new_operand_char = Character.forDigit(result,result+1);
-             operand.push(new_operand_char);
-
-             System.out.println("Func: " + func);
-             i += new_index;
-             System.out.println("Index: " + i);
-         //If a variable is found,
-         }else if(variables.get(String.valueOf(input.charAt(i))) != null){
-            //push the variable value to the stack
-             operand.push(varValueCharacter(variables.get(String.valueOf(input.charAt(i)))));
-        //Else if a comment is detected ("/")
-        //Edit: I don't need this at all since compute doesn't do initial parsing 🤦. 
-         }else if(input.charAt(i) == '/'){
-             System.out.println("\"/\" detected!" );
-             break;
-         }else if(!Character.isDigit(input.charAt(i))){
-             System.out.println("Index: " + input.charAt(i));
-             operator.push(input.charAt(i));
-             //Order swapped because stack pops in reverse order i.2 12- = 1 
-             char op2 = operand.pop();
-             char op1 = operand.pop();
-             
-             //Pops the current operator, ready for the switch
-             Character x = operator.pop();
-             
-             switch(x){
-             
-                 case '+' -> new_operand = add(op1,op2);
-                 case '-' -> new_operand = subtract(op1,op2);
-                 case '*' -> new_operand = multiply(op1,op2);
-                 case '/' -> new_operand = divide(op1,op2);
-                 case '%' -> new_operand = modulo(op1,op2);
-                 case '^' -> new_operand = exponent(op1, op2);
-
-                 default -> System.out.println(x + " is not an operator");
-             }
-             char new_operand_char = Character.forDigit(new_operand,new_operand+1);
-             //System.out.println(Character.toString(new_operand_char)); //for test
-             operand.push(new_operand_char);
-             
-         }
-            
-        }
-        //NOTE: IF LESS BUSY, ADD SOMETHING THAT RETURNS ORIGINAL VALUE IF NO OPERATORS. CURRENTLY RETURNS 0
-        int answer = new_operand;
-        
-    return answer; 
-    }
-    //Wraps compute output
-    private static String computeManager(int output){
-        String wrapped_output = "";
-
-        wrapped_output = "" + output + "";
-        
-        return wrapped_output;
-    }
-    
-    //Checks if a char is the same as a first letter of any of the recognised functions.
-    private static boolean isMathFunction(char c){
-        boolean isFunc = false;
-        //log, sin, cos, tan, sqt, sqr, abs
-        char[] funcs = {'s', 'l', 'c', 't', 'a'};
-        
-        for(int i = 0; i < funcs.length; i++){
-            if(c == funcs[i]){
-                isFunc = true;
-            }
-        }
-        return isFunc;
-    }
-    
-    //add function for the compute command
-    private static int add(char a, char b){
-        int op1 = 0;
-        int op2 = 0;
-        
-        op1 = Character.getNumericValue(a);
-        op2 = Character.getNumericValue(b);
-        
-        return op1+op2;
-    }
-    //subtract function for the compute command
-    private static int subtract(char a, char b){
-        int op1 = 0;
-        int op2 = 0;
-        
-        op1 = Character.getNumericValue(a);
-        op2 = Character.getNumericValue(b);
-        
-        return op1-op2;
-    }
-    //multiply function for the compute command
-    private static int multiply(char a, char b){
-        int op1 = 0;
-        int op2 = 0;
-        
-        op1 = Character.getNumericValue(a);
-        op2 = Character.getNumericValue(b);
-        
-        return op1*op2;
-    }
-    //divide function for the compute command
-    private static int divide(char a, char b){
-        int op1 = 0;
-        int op2 = 0;
-        
-        op1 = Character.getNumericValue(a);
-        op2 = Character.getNumericValue(b);
-        
-        return op1/op2;
-    }
-    //modulo function for the compute command
-    private static int modulo(char a, char b){
-        int op1 = 0;
-        int op2 = 0;
-        
-        op1 = Character.getNumericValue(a);
-        op2 = Character.getNumericValue(b);
-        
-        return op1%op2;
-    }  
-    //exponent function for the compute command
-    private static int exponent(char a, char b){
-        int op1 = 0;
-        int op2 = 0;
-        
-        op1 = Character.getNumericValue(a);
-        op2 = Character.getNumericValue(b);
-        
-        int x = (int) Math.round(Math.pow(op1 , op2));
-
-        return x;
-    } 
-    
-    //function dispatcher
-    private static int computeFunc(String function, int operand){
-        int result = 0;
-        String[] functions = {"sin", "cos", "log", "tan", "sqrt", "sqr"};
-        
-        switch(function){
-            
-            case "sin" -> result=sin(operand);
-            case "cos" -> result=cos(operand);
-            case "tan" -> result=tan(operand);
-            case "log" -> result=log(operand);
-            case "sqt" -> result=sqt(operand);
-
-            default -> System.out.println("Function: \"" +function + "\" does not esist");
-        }
-        return result;
-    }
-    //sin function for compute function
-    private static int sin(int operand){
-        int result = 0;
-        double rad_operand = 0;
-        rad_operand = Math.toRadians(operand);
-        System.out.println("Operand" + rad_operand);
-        result = (int) Math.round(Math.sin(rad_operand));
-        System.out.println("Result in sin: " + result);
-        return result;
-    }
-    //cos function for compute function
-    private static int cos(int operand){
-        int result = 0;
-        double rad_operand = 0;
-        rad_operand = Math.toRadians(operand);
-        System.out.println("Operand" + rad_operand);
-        result = (int) Math.round(Math.cos(rad_operand));
-        System.out.println("Result in cos: " + result);
-        return result;
-    }
-    //tan function for compute function
-    private static int tan(int operand){
-        int result = 0;
-        double rad_operand = 0;
-        rad_operand = Math.toRadians(operand);
-        System.out.println("Operand" + rad_operand);
-        result = (int) Math.round(Math.tan(rad_operand));
-        System.out.println("Result in sin: " + result);
-        return result;
-    }
-    //log function for compute function
-    private static int log(int operand){
-        int result = 0;
-        System.out.println("operand in log: "+operand);
-        result = (int) Math.round(Math.log(operand));
-        
-        return result;
-    }
-    //sqt function for compute function
-    private static int sqt(int operand){
-        int result = 0;
-        
-        result = (int) Math.sqrt(operand);
-
-        return result;
-    }
-    
+   
     //Need to add a function to check if a variable exists,
     private static void store(String subject){
         String var_name = parseVarName(subject);
@@ -362,7 +140,7 @@ public class DSLInterpreter {
         // hashmap.put("var_name",var); //hashmap.get("var_name"); //hashmap.remove("var_name") //hashmap.clear();
         String var_name = parseVarName(subject);
         int var = parseVariable(subject);
-        variables.put(var_name, var);
+        variables.put(var_name, (double) var);
         System.out.println("[+]");
     }
     

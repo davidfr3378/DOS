@@ -21,6 +21,7 @@ public class Shell {
             input = getInput();
             
             DSLParser.parserManager(input);
+            System.out.println("Log 1: " + Math.log10(1));
             // //Get command token and the rest of input
             // String command = DSLParser.getCommand(input);
             // String tokenised_input = DSLParser.tokenize(input);
