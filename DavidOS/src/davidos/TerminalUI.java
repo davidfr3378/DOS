@@ -16,7 +16,7 @@ public class TerminalUI {
 
     public TerminalUI() {
         // Create the frame
-        JFrame frame = new JFrame("CalcOS Terminal");
+        JFrame frame = new JFrame("DOS Terminal");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 500);
         frame.setLayout(new BorderLayout());
