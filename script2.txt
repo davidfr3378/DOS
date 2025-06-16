@@ -1,0 +1,19 @@
+/ Let's start with some basic values
+let x cp 90 sin             
+let y cp 2 3 ^              
+let z cp 100 7 %            
+/ Now let's compute some inverse trig
+let i cp x asin          
+let q cp y log            
+let r cp 16 sqrt            
+let s cp -99 abs            
+/ Now combine everything
+let t cp i q + r + s + z +     
+/ View the results
+var t
+var i
+var r
+clear t
+clear q
+clear r
+clear s

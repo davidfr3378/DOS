@@ -1,0 +1,26 @@
+/ This is script one. 
+/ Made to test the Math DSL I programmed (I have to say, I didn't do a lot of logic and error checking).
+Take this scenario: a machine needs to perform a series of simple arithmetic computations for an unknown reason, and thus it plugs the input into the program via this file.
+/ Calculate and store the natural log of the sine of 90 (should be ln(1) = 0)
+let a cp 90 sin log
+/ Compute absolute value of -45 (to test abs), store in b
+let b cp -45 abs
+/ Calculate log base 10 of 1000 (should be 3), store in c
+let c cp 1000 log
+/ Combine a, b, and c using addition and multiplication
+// ((a + b) * c)
+let d cp a b + c *
+/ Now test exponentiation: e = (2^4)
+let e cp 2 4 ^
+/ Store cosine of 60 into f
+let f cp 60 cos
+/ Store tangent of 45 into g
+let g cp 45 tan
+/ Combine d, e, f, g: h = d + e - f * g
+let h cp f g * e - d +
+/ Check value of h
+var h
+/ Clear some variables
+clear a
+clear c
+clear f

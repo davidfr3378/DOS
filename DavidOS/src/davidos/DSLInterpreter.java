@@ -35,7 +35,7 @@ Goals: [✓] [X] [-]
 public class DSLInterpreter {
     static Shell shell = new Shell();
     static Computer computer = new Computer();
-    static HashMap<String, Double> variables = new HashMap<String, Double>();
+    
     static Scanner scanner = new Scanner(System.in);
     static boolean file_created = false;
 
@@ -55,12 +55,12 @@ public class DSLInterpreter {
         while(!command.equals("") && count == 1){
             switch(command){
 
-                case "cp" -> result += computer.compute(subject, variables);
+                case "cp" -> result += computer.compute(subject);
                 case "st" -> store(subject);
-                case "var" -> System.out.println(subject + " = " + variables.get(subject));
+                case "var" -> result += computer.getVar(subject);
                 case "check" -> System.out.printf("%s exists: %b" , subject, checkVar(subject));
-                case "let"  -> let(subject);
-                case "clear" -> clear(subject);
+                case "let"  -> result += computer.let(subject);
+                case "clear" -> computer.clear(subject);
                 case "parse" -> parseFile(subject);
                 case "set" -> set(subject); 
                 case "graph" -> graph(subject); //to be removed temporarily
@@ -80,7 +80,7 @@ public class DSLInterpreter {
     //Need to add a function to check if a variable exists,
     private static void store(String subject){
         String var_name = parseVarName(subject);
-        int var = parseVariable(subject);
+        double var = parseVariable(subject);
         createFile();
         if(checkVar(var_name)){
             System.out.println("Already exists");
@@ -121,7 +121,7 @@ public class DSLInterpreter {
         return false;
     }
     //writes to a file; DO NOT USE FOR ANYTHING NOT VARIABLE.TXT
-    private static void writeFile(String var_name, int var){
+    private static void writeFile(String var_name, double var){
         try{
             //CHECK OUT THE DOCS FOR FILEWRITER: TRUE????
             FileWriter myWriter = new FileWriter("variables.txt", true);
@@ -134,19 +134,10 @@ public class DSLInterpreter {
         }
     }
     //stores a  variable in a hashmap
-    private static void let(String subject) {
-        //Hashmap used was made public so as to have the ability to clear it from quit()
-        //Hashmap stuff:
-        // hashmap.put("var_name",var); //hashmap.get("var_name"); //hashmap.remove("var_name") //hashmap.clear();
-        String var_name = parseVarName(subject);
-        int var = parseVariable(subject);
-        variables.put(var_name, (double) var);
-        System.out.println("[+]");
-    }
-    
+ 
     //runs through a string and collects all non-numbers
-    private static String parseVarName(String subject){
-        
+    //made public for let in computer
+    public static String parseVarName(String subject){
         int index = 0;
         String temp_var = "";
         String varName = "";
@@ -174,9 +165,31 @@ public class DSLInterpreter {
         varName += variable.remove();
         //System.out.println("Actual variabl name being passed out: " + varName);
         return varName;
+        
     }
     //runs through a string and collects all numbers
-    private static int parseVariable(String subject){
+    //made public for let in computer
+    public static double parseVariable(String subject){
+        //Remove first character
+        if (subject == null || subject.length() <= 1) {
+            // return empty string if input is null or only 1 character
+        }
+        subject = subject.substring(1);
+        double result = 0.0;
+        //System.out.println("Subjectee:" + subject + "e");
+        for(String Token : subject.split("\\s+")){
+            //if number
+            if(Computer.isNumber(Token)){
+                 result = Computer.stringToNumber(Token);
+  
+            }else{
+                //pass
+            }
+        }
+
+        /* 
+        Former code for this (made useless because it wouldn't work with doubles) 
+        System.out.println("Into parVar:" + subject + "e");
         int index = 0; //string loop
         String temp_var = ""; 
         int var = 0; //final value
@@ -209,7 +222,10 @@ public class DSLInterpreter {
         //get the integerparse of that string
         var += Integer.parseInt(temp_var);
         //System.out.println("Actual integer being passed out: " + var);
+
         return var;
+        */
+        return result;
     }
     
     //checks through a file and if a given char exists, collects it. DO NOT USE FOR ANYTHING NOT VARIABLE.TXT
@@ -242,11 +258,7 @@ public class DSLInterpreter {
         
     return intVar;
     }
-    //clears a variable in hashmap
-    private static void clear(String subject) {
-            variables.remove(subject);
-            System.out.println("[+]");
-    }
+    
     //turns an int into a Character
     private static Character varValueCharacter(int x){
         Character c = '\0';
@@ -261,7 +273,11 @@ public class DSLInterpreter {
     }
     //parse through a file and plug each line into detect()
     private static void parseFile(String filename){
-        String filePath = "C:\\Users\\wilma\\OneDrive\\Documents\\NetBeansProjects\\DOS\\DavidOS\\"+filename;
+        File file = new File(filename);
+        String filePath =  file.getAbsolutePath();
+        System.out.println(filePath);
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        //String filePath = "C:\\Users\\cadls\\OneDrive\\Desktop\\David\\Programming\\Java\\Projects\\DOS v2\\DOS\\DavidOS\\"+filename;
         System.out.println("Filepath:" + filePath);
             //Create a bufferedReader
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -269,9 +285,9 @@ public class DSLInterpreter {
                 //For each line, as long as not empty
                 while ((temp_line = reader.readLine()) != null) {
                     //tokenise the line via getCommand() and tokenize in shell, then plug into detect
-                    System.out.println("Command: " + DSLParser.getCommand(temp_line) + " Token: " + DSLParser.tokenize(temp_line));
+                    //System.out.println("Command: " + DSLParser.getCommand(temp_line) + " Token: " + DSLParser.tokenize(temp_line));
 
-                    detect(DSLParser.getCommand(temp_line),DSLParser.tokenize(temp_line));  
+                    System.out.println(Shell.processInput(temp_line));   
                 }
             } catch (IOException e) {
                 System.out.println("File doesn't exist");
@@ -279,7 +295,8 @@ public class DSLInterpreter {
             }
      
     }
-    
+    //gets the value of a variable
+
     //set a variable to the output of another command
     private static void set(String subject){
         System.out.println("Parser out of order");
@@ -296,6 +313,6 @@ public class DSLInterpreter {
     //what do you think this does?
     private static void quit(){
         System.out.println("Have a good day!");
-        variables.clear();
+        Computer.clearAll();
     }
 }//Isn't working because varValue... cannot put a two digit number into a string, obviously; Can't even remember how it worked before. Possible solution involves changing the compute functions

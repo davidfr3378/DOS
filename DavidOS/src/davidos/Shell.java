@@ -19,8 +19,7 @@ public class Shell {
         while(!input.equalsIgnoreCase("quit")){
             System.out.print("> ");
             input = getInput();
-            
-            DSLParser.parserManager(input);
+
             // //Get command token and the rest of input
             // String command = DSLParser.getCommand(input);
             // String tokenised_input = DSLParser.tokenize(input);
@@ -37,6 +36,12 @@ public class Shell {
         return input;
     }
     
+    public static String processInput(String input){  
+        String output = null;
+        output = DSLParser.parserManager(input);
+
+        return output;
+    }
 }
 
 /* Saved for later:

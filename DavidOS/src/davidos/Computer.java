@@ -7,14 +7,14 @@ public class Computer {
     //static private HashMap<String, Double> variables = new HashMap<String, Double>();
     static String[] binary_operators = {"+", "-", "/", "*", "^", "%"};
     static String[] functions = {"!", "sin", "cos", "tan", "log", "ln", "sqrt", "abs", "asin", "acos", "atan"};
-
+    static HashMap<String, Double> variables = new HashMap<String, Double>();
 
     Computer(){
 
     }
 
     //Arithmetic expression parser
-    public double compute(String input, HashMap <String, Double> variables){
+    public double compute(String input){
      //Creating Stacks for operator and operand.
      Stack<Double> operands = new Stack<Double>();
      Stack<String> operators = new Stack<String>();
@@ -35,7 +35,13 @@ public class Computer {
 
          }else if(isVariable(tokens[i], variables)){
             //Load into operand stack
-            operands.push(variables.get(tokens[i]));
+            //System.out.println("Being pushed to operands:" + variables.get(tokens[i]) + "e");
+            if(variables.get(tokens[i])% 1 == 0){
+                operands.push(variables.get(tokens[i]));
+            }else{
+                operands.push(variables.get(tokens[i]));
+            }
+            
             
          }else if(isOperator(tokens[i])){
             String operator = tokens[i];
@@ -46,7 +52,7 @@ public class Computer {
             //OPERATE
             double b = operands.pop();
             double a = operands.pop();
-            double result = binaryOperator(operator, b, a);
+            double result = binaryOperator(operator, a, b);
 
             //Load result to operands
             operands.push(result);
@@ -58,7 +64,7 @@ public class Computer {
             String operator = tokens[i];
             //OPERATE
             double result = unaryOperator(operator, operand);
-            System.out.println("result:" + result);
+            //System.out.println("result:" + result);
             //Load result to operands
             operands.push(result);
 
@@ -73,7 +79,8 @@ public class Computer {
     }
     //Checks
     //Checks if a token has numerical value
-    private static boolean isNumber(String token){
+    //Made public for parseVar in DSLInterpreter.
+    public static boolean isNumber(String token){
         try {
             Double.parseDouble(token);
             return true;
@@ -115,7 +122,8 @@ public class Computer {
     
     //Conversions
     //Turns a string into a number
-    private static double stringToNumber(String token){
+    //Made public for ParseVar in DSLInterpreter. 
+    public static double stringToNumber(String token){
         double new_number = 0.0;
         try{
             new_number = Double.parseDouble(token);
@@ -172,9 +180,10 @@ public class Computer {
             case "ln" : return Math.log(operand);
             case "sqrt" : return Math.sqrt(operand);
             case "abs" : return Math.abs(operand);
-            case "asin" : return Math.asin(Math.toRadians(operand));
-            case "acos" : return Math.acos(Math.toRadians(operand));
-            case "atan" : return Math.atan(Math.toRadians(operand));
+            //They output radians. I need then to not. 
+            case "asin" : return Math.toDegrees(Math.asin(operand));
+            case "acos" : return Math.toDegrees(Math.acos(operand));
+            case "atan" : return Math.toDegrees(Math.atan(operand));
 
             default : System.out.println("ERROR: BINARY OPERATOR DOES NOT EXIST");
             
@@ -183,4 +192,43 @@ public class Computer {
         return -1;
 
     }
+
+    //I'm tired bro...
+    //made public for detect in DSLInterpreter
+    public static String let(String subject) {
+        //System.out.println("Subject:" + subject + "e");
+        //Hashmap used was made public so as to have the ability to clear it from quit()
+        //Hashmap stuff:
+        // hashmap.put("var_name",var); //hashmap.get("var_name"); //hashmap.remove("var_name") //hashmap.clear();
+        String var_name = DSLInterpreter.parseVarName(subject);
+        //System.out.println("Subject:" + var_name + "e");
+        double var = DSLInterpreter.parseVariable(subject);
+        //System.out.println("Subject:" + var + "e");
+        //System.out.println("Var after parseVar:" + var + "e");
+        variables.put(var_name, var);
+
+        System.out.println("[+]");
+
+        return "[+]";
+    }
+    //made public and moved to computer because sharing variable hashmap in DSLInterpreter
+    public static String getVar(String subject){
+        double value = variables.get(subject);
+        String output = "";
+        System.out.println(subject + " = " + value);
+        output += subject + " = " + variables.get(subject);
+        return output;
+    }
+    //made public and moved to computer because sharing variable hashmap in DSLInterpreter
+    //clears a variable in hashmap
+    public static void clear(String subject) {
+            variables.remove(subject);
+            System.out.println("[+]");
+    }
+
+    //Clears all in hashmap
+    public static void clearAll(){
+        variables.clear();
+    }
+
 }

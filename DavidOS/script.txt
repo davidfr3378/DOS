@@ -1,8 +1,0 @@
-let a 9
-var a
-let b 4
-var b
-//Comment
-cp ab*
-set r ab*
-graph sin(x) f: 0 t: 90
